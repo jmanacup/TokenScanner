@@ -1,22 +1,55 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdio>
 
+using namespace std;
 
-void scan(FILE*);
+//function prototypes
+string scan(FILE*);
 int colNum(char x);
 
 int main(int argc, char *argv[]){
 
-    FILE *fp = fopen(argv[1], "r"); 
+    FILE *fp = fopen(argv[1], "r");
 
-    scan(fp);
+    vector<string> tokenVect;
+
+    while(!feof(fp)){
+
+        string token = scan(fp);
+
+        if(token == "error"){
+            cout << token << endl;
+            exit(0);
+        }
+
+        else{
+            tokenVect.push_back(token);
+        }
+
+    }
+
+    //print elements of tokenVect
+    cout << '{';
+    for(int i = 0; i < tokenVect.size(); i++){
+        
+        
+        if(i != tokenVect.size() - 1){
+            cout << tokenVect.at(i) << ", ";
+        }
+        else {
+            cout << tokenVect.at(i);
+        }
+        
+
+    }
+    cout << '}';
 
     return 0;
 }
 
-void scan(FILE* fp){
+string scan(FILE* fp){
 
     int transitionTable[17][15] = {
      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -38,7 +71,7 @@ void scan(FILE* fp){
      {0,0,0,0,0,0,0,0,0,0,0,0,16,16,0}
     };
 
-    char stateToken[][100] = {
+    string stateToken[] = {
         "error",
         "error",
         "div",
@@ -59,18 +92,18 @@ void scan(FILE* fp){
         };
 
     char x;
-    int state = 1, index = 0, index2 = 0, lastState;
-    char word[100];
-
-    //used to store the tokens
-    char listToken[500][100];
+    int state = 1, lastState;
+    string word;
 
     do{
+
+        //get input character
         x = fgetc(fp);
 
-        //get correct column number
+        //get correct column number for the input character
         int num = colNum(x);
         
+        //store last instance of state
         lastState = state;
         
         //longest possible token rule; exhaust possible input in a state
@@ -81,39 +114,37 @@ void scan(FILE* fp){
 
             if(state == 16){
             //append the char into the word
-            word[index++] = x;
+            word.push_back(x);
             }
 
         }
         else{
             //2 possibilities: invalid state, recognized state
-            //not a valid token
-            if(strcmp(stateToken[state], "error") == 0){
-                printf("%s", "error.");
-                exit(0);
+            //invalid token
+            if(stateToken[state] == "error"){
+                return "error";
             }
-            //recognize state
-            //2 possibilities: recognized but not valid and valid
+            //recognized state
+            //2 possibilities: tokenless state or valid token
             else {
-                if(strcmp(stateToken[lastState], "error") == 0){
-                    printf("%s", "error.");
-                    exit(0);
+                //tokenless state
+                if(stateToken[lastState] == "error"){
+                    return "error";
                 }
-                else if(strcmp(word, "read") == 0){
-                    strcpy(listToken[index2],"read");
+                else if(word == "read"){
+                    return "read";
                 }
-                else if(strcmp(word, "write") == 0){
-                    strcpy(listToken[index2],"write");
+                else if(word == "write"){
+                    return "write";
                 }
+                //valid token
                 else{
-                    strcpy(listToken[index2],stateToken[lastState]);
+                    return stateToken[lastState];
                 }
 
-                index = 0;
-                index2++;
-
-                memset(word, 0, sizeof(word));
-
+                word.clear();
+                
+                //goes back to the first state
                 state = 1;
 
                 //go to the last instance
@@ -123,21 +154,9 @@ void scan(FILE* fp){
 
         }
 
-    }while(x != EOF);
-    
-    printf("(");
-    for(int i = 0; i < index2; i++){
+    }while(true);
 
-        if(i != index2 - 1)
-            printf("%s, ", listToken[i]);
-        else
-            printf("%s", listToken[i]);
-            
-    }
-    printf(")");
-
-
-    
+    return "error";
 }
 
 int colNum(char x){

@@ -4,19 +4,20 @@
 #include <stdlib.h>
 
 
-void scan(FILE*);
+const char* scan(FILE*);
 int colNum(char x);
 
 int main(int argc, char *argv[]){
 
     FILE *fp = fopen(argv[1], "r"); 
 
-    scan(fp);
+
+    printf("%s", scan(fp));
 
     return 0;
 }
 
-void scan(FILE* fp){
+const char* scan(FILE* fp){
 
     int transitionTable[17][15] = {
      {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -38,7 +39,7 @@ void scan(FILE* fp){
      {0,0,0,0,0,0,0,0,0,0,0,0,16,16,0}
     };
 
-    char stateToken[][100] = {
+    static char* stateToken[] = {
         "error",
         "error",
         "div",
@@ -59,7 +60,7 @@ void scan(FILE* fp){
         };
 
     char x;
-    int state = 1, index = 0, index2 = 0, lastState;
+    int state = 1, index = 0, lastState;
     char word[100];
 
     //used to store the tokens
@@ -96,21 +97,19 @@ void scan(FILE* fp){
             //2 possibilities: recognized but not valid and valid
             else {
                 if(strcmp(stateToken[lastState], "error") == 0){
-                    printf("%s", "error.");
-                    exit(0);
+                    return "error.";
                 }
                 else if(strcmp(word, "read") == 0){
-                    strcpy(listToken[index2],"read");
+                    return "read";
                 }
                 else if(strcmp(word, "write") == 0){
-                    strcpy(listToken[index2],"write");
+                    return "write";
                 }
                 else{
-                    strcpy(listToken[index2],stateToken[lastState]);
+                    return stateToken[lastState];
                 }
 
                 index = 0;
-                index2++;
 
                 memset(word, 0, sizeof(word));
 
@@ -124,20 +123,6 @@ void scan(FILE* fp){
         }
 
     }while(x != EOF);
-    
-    printf("(");
-    for(int i = 0; i < index2; i++){
-
-        if(i != index2 - 1)
-            printf("%s, ", listToken[i]);
-        else
-            printf("%s", listToken[i]);
-            
-    }
-    printf(")");
-
-
-    
 }
 
 int colNum(char x){

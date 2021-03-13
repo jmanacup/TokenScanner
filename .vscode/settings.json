@@ -1,4 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "Enabled",
-    "workbench.preferredDarkColorTheme": "Visual Studio Light"
+    "workbench.preferredDarkColorTheme": "Visual Studio Light",
+    "files.associations": {
+        "iostream": "cpp"
+    }
 }

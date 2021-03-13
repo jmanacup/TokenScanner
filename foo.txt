@@ -1,5 +1,14 @@
-read
-/* foo
-bar */
+/
+(
+)
++
+-
 *
-five 5
+:=
+.1
+1
+1.
+1
+abc123
+read
+write
