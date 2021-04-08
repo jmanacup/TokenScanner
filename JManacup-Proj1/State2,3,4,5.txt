@@ -1,0 +1,10 @@
+/
+//
+///
+//read x
+//read y
+// x = 9.2 + 3
+/* read z
+reaz k
+m = z + k
+*/
